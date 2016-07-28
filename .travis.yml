@@ -1,44 +1,6 @@
 language: c
-sudo: required
-dist: trusty
-os:
-  - linux
-  - osx
-branches:
-  except:
-    - /^(wip\/)?(appveyor|msvc|mingw|windows)(\-.+)?$/
-    - /^master$/
-env:
-  matrix:
-    # Latest versions of each compiler
-    - COMPILER=gcc-6 BUILD_TYPE=debug
-    - COMPILER=clang-3.8 BUILD_TYPE=debug
-    - COMPILER=x86_64-w64-mingw32-gcc BUILD_TYPE=debug
-    - COMPILER=i686-w64-mingw32-gcc BUILD_TYPE=debug
-    - COMPILER=icc BUILD_TYPE=debug
-
-    # Sanitizers
-    - COMPILER=gcc-6 BUILD_TYPE=asan
-    # - COMPILER=gcc-6 BUILD_TYPE=ubsan
-    # - COMPILER=gcc-6 BUILD_TYPE=tsan
-
-    # Test release mode
-    - COMPILER=gcc-6 BUILD_TYPE=release
-    - COMPILER=clang BUILD_TYPE=release
-
-    # Older compilers
-    - COMPILER=gcc-4.6 BUILD_TYPE=debug
-    - COMPILER=gcc-4.7 BUILD_TYPE=debug
-    - COMPILER=gcc-4.8 BUILD_TYPE=debug
-    - COMPILER=gcc-4.9 BUILD_TYPE=debug
-    - COMPILER=gcc-5 BUILD_TYPE=debug
-    - COMPILER=clang-3.4 BUILD_TYPE=debug
-    - COMPILER=clang-3.5 BUILD_TYPE=debug
-    - COMPILER=clang-3.6 BUILD_TYPE=debug
-    - COMPILER=clang-3.7 BUILD_TYPE=debug
-
-    # Coverage analysis
-    - COMPILER=gcc-6 BUILD_TYPE=coverage
+sudo: false
+matrix:
   global:
     # Coveralls.io
     - secure: "QDuBYD70tDc+2v4WdNEbmv4BE/jVHrDp9QZ+a7ZYPgnUe5hRnKfKSOhsuzGDRkMBnrJFbaeFITrGY7WQKcwLcMxKq11/Lk6Of9ai+TxN4VY+p1yt3Poz/7pDg7bVTPepnEgVUjjLQC8UoGXo7jaLscqJuU3vAl/LVQ9igC8TwKQ="
@@ -46,57 +8,84 @@ env:
     - secure: "GkdtM9uoDVQoJ0h5BNrwGwURPYWvBm/7wcgqrrrqAu3AB+/MkAsUVzIs+Y9+iGOB8WrkOLEHC0+bD/Zhr1YfDa6MKhnP+GhFknfB8bIND+hEhYaRi7521evQOkZQU5RYXXl6QFdlhTNxkWDZdctlrXWIHWu6SagAsJUrBbPWAtY="
     # Intel C Compiler
     - secure: "mlMhIsz3GCfm796RN4jqNVMTdNkOXwTIgCKTv/om/KqU2+yUhCweOD4u98QmYIFNGnaPkqur6xGwkUtyJOrgY4FTZ6BtHUWY9y7+Z7cTdvCpnXA28LtcBYTq2F+S8q+Z3mJcz9LNz1ufiK2ZzOFVm03d1sYu0QMNz6FLZ6HtaEU="
-matrix:
-  exclude:
-    # Limit OS X to 1 debug and 1 release build.
-    - os: osx
-      env: COMPILER=x86_64-w64-mingw32-gcc BUILD_TYPE=debug
-    - os: osx
-      env: COMPILER=i686-w64-mingw32-gcc BUILD_TYPE=debug
-    - os: osx
-      env: COMPILER=icc BUILD_TYPE=debug
-    - os: osx
-      env: COMPILER=gcc-6 BUILD_TYPE=asan
-    - os: osx
-      env: COMPILER=gcc-6 BUILD_TYPE=ubsan
-    - os: osx
-      env: COMPILER=gcc-6 BUILD_TYPE=tsan
-    - os: osx
-      env: COMPILER=clang BUILD_TYPE=release
-    - os: osx
-      env: COMPILER=clang BUILD_TYPE=release
-    - os: osx
-      env: COMPILER=gcc-4.6 BUILD_TYPE=debug
-    - os: osx
-      env: COMPILER=gcc-4.7 BUILD_TYPE=debug
-    - os: osx
-      env: COMPILER=gcc-4.8 BUILD_TYPE=debug
-    - os: osx
-      env: COMPILER=gcc-4.9 BUILD_TYPE=debug
-    - os: osx
-      env: COMPILER=gcc-5 BUILD_TYPE=debug
-    - os: osx
-      env: COMPILER=clang-3.4 BUILD_TYPE=debug
-    - os: osx
-      env: COMPILER=clang-3.5 BUILD_TYPE=debug
-    - os: osx
-      env: COMPILER=clang-3.6 BUILD_TYPE=debug
-    - os: osx
-      env: COMPILER=clang-3.7 BUILD_TYPE=debug
-    - os: osx
-      env: COMPILER=clang-3.8 BUILD_TYPE=debug
-    - os: osx
-      env: COMPILER=gcc-6 BUILD_TYPE=coverage
-before_install:
- - ./.travis.sh deps
+
+    - BUILD_TYPE=Debug
+    - GLOBAL_C_FLAGS="-Werror"
+    - GLOBAL_CXX_FLAGS="-Werror"
+  allow_failures:
+    - env: SANITIZER=undefined C_COMPILER=clang-3.8 CXX_COMPILER=clang++-3.8 C_FLAGS="-Werror" CXX_FLAGS="-Werror"
+  include:
+    # ###
+    # ## Build with the latest version of each compiler.
+    # ###
+    # - os: linux
+    #   env: C_COMPILER=gcc-6 CXX_COMPILER=g++-6 C_FLAGS="-Werror" CXX_FLAGS="-Werror"
+    #   addons:
+    #     apt:
+    #       sources:
+    #         - ubuntu-toolchain-r-test
+    #       packages:
+    #         - gcc-6
+    #         - g++-6
+    # - os: linux
+    #   env: C_COMPILER=clang-3.8 CXX_COMPILER=clang++-3.8 C_FLAGS="-Werror" CXX_FLAGS="-Werror"
+    #   addons:
+    #     apt:
+    #       sources:
+    #         - llvm-toolchain-precise-3.8
+    #         - ubuntu-toolchain-r-test
+    #       packages:
+    #         - clang-3.8
+
+    # ###
+    # ## Check release build
+    # ###
+    # - os: linux
+    #   env: BUILD_TYPE=Release C_COMPILER=gcc-6 CXX_COMPILER=g++-6 C_FLAGS="-Werror" CXX_FLAGS="-Werror"
+    #   addons:
+    #     apt:
+    #       sources:
+    #         - ubuntu-toolchain-r-test
+    #       packages:
+    #         - gcc-6
+    #         - g++-6
+
+    ###
+    ## Sanitizers
+    ###
+    - os: linux
+      env: SANITIZER=address C_COMPILER=clang-3.8 CXX_COMPILER=clang++-3.8 C_FLAGS="-Werror" CXX_FLAGS="-Werror"
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.8
+            - george-edison55-precise-backports
+          packages:
+            - clang-3.8
+            - cmake
+            - cmake-data
+    - os: linux
+      env: SANITIZER=undefined C_COMPILER=clang-3.8 CXX_COMPILER=clang++-3.8 C_FLAGS="-Werror" CXX_FLAGS="-Werror"
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.8
+            - george-edison55-precise-backports
+          packages:
+            - clang-3.8
+            - cmake
+            - cmake-data
+
+branches:
+  except:
+    - /^(wip\/)?(appveyor|msvc|mingw|windows)(\-.+)?$/
+    - /^master$/
+
 script:
- - source ~/.bashrc # For ICC
- - ./.travis.sh configure && ./.travis.sh make && ./.travis.sh test
-notifications:
-  irc:
-    channels:
-      - "chat.freenode.net#squash"
-    on_success: change
-    on_failure: always
-    use_notice: true
-    skip_join: true
+  - cmake --version
+  - mkdir build && cd build
+  - cmake -DCMAKE_C_COMPILER="${C_COMPILER}" -DCMAKE_CXX_COMPILER="${CXX_COMPILER}" -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" -DENABLE_SANITIZER="${SANITIZER}" -DCMAKE_C_FLAGS="${GLOBAL_C_FLAGS}" -DCMAKE_CXX_FLAGS="${GLOBAL_CXX_FLAGS}" ..
+  - make VERBOSE=1
+  - ctest -V
