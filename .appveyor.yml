@@ -15,7 +15,7 @@ environment:
   # Has issues: https://github.com/quixdb/squash/issues/185
   # Also, waiting on CMake 3.6.0 for toolset support
   # - GENERATOR: Visual Studio 14 2015 Win64
-  #   TOOLSET: v140_clang_3_7
+  #   TOOLSET: v140_clang_c2
 
   # Clang targeting MSVC
   # See https://ci.appveyor.com/project/quixdb/squash/build/532
