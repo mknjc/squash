@@ -56,7 +56,7 @@ function (set_compiler_specific_flags)
     list (APPEND compiler_flags ${COMPILER_SPECIFIC_FLAGS_MSVC})
   endif()
 
-  if (NOT "${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
+  if (NOT "${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC" AND NOT "${CMAKE_C_SIMULATE_ID}" STREQUAL "MSVC")
     list (APPEND compiler_flags ${COMPILER_SPECIFIC_FLAGS_GCCISH})
   endif ()
 
