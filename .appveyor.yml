@@ -77,7 +77,7 @@ before_build:
         }
       } else {
         if ($env:CC -like 'clang*') {
-          cmake -G "$env:GENERATOR" -DCMAKE_BUILD_TYPE="$env:CONFIGURATION" -DENABLE_BROTLI=no -DENABLE_GIPFELI=no -DENABLE_LZHAM=no -DENABLE_LZO=no ..
+          cmake -G "$env:GENERATOR" -DCMAKE_BUILD_TYPE="$env:CONFIGURATION" -DENABLE_LZHAM=no -DENABLE_LZO=no ..
         } else {
           cmake -G "$env:GENERATOR" -DCMAKE_BUILD_TYPE="$env:CONFIGURATION" ..
         }
